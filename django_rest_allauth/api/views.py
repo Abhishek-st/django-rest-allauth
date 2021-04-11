@@ -277,7 +277,7 @@ class SocialUserAuth(generics.ListAPIView):
         user_token = user_token.key
         user.token = user_token
         user.save()
-        DjangoRestAllAuth.objects.get_or_create(user=user, provider=provider, email=email, username=username, social_id=social_id)
+        DjangoRestAllAuth.objects.get_or_create(user=user, provider=provider, email=email, social_id=social_id)
         userdetails = {}
         userdetails['username'] = user.username
         userdetails['email'] = user.email
@@ -296,16 +296,16 @@ class SocialUserAuth(generics.ListAPIView):
             theu = email.find('@')
             username = email[:theu]
             try:
-                user = User.objects.get(username=username)
+                user = User.objects.get(email=email)
                 if user is not None:
                     if user.is_active:
-                        details = self.generate_details(user, provider, email, username, social_id)
+                        details = self.generate_details(user, provider, email, social_id)
                         return Response(details, status=HTTP_201_CREATED)
             except:
                 allchar = string.ascii_letters + string.digits
                 password = ''.join(choice(allchar) for x in range(13))
                 user = User.objects.create(username=username, email=email, password=password)
-                details = self.generate_details(user, provider, email, username, social_id)
+                details = self.generate_details(user, provider, email, social_id)
                 return Response(details, status=HTTP_201_CREATED)
         else:
             data = {"message":serializer.errors, "results":[]}
